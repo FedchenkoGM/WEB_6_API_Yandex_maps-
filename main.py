@@ -3,6 +3,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
 from PyQt5.QtGui import QPixmap
 import requests
+from PyQt5.QtCore import Qt
 
 
 class Window(QMainWindow):
@@ -43,12 +44,19 @@ class Window(QMainWindow):
         pixmap.load('map.png')
         self.map.setPixmap(pixmap)
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_PageUp and self.map_zoom < 17:
+            self.map_zoom += 1
+        if event.key() == Qt.Key_PageDown and self.map_zoom > 0:
+            self.map_zoom -= 1
+        self.refresh_map()
+
 
 def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
 
 
-# задача 1
+# задача 1 + 2
 if __name__ == '__main__':
     sys.excepthook = except_hook
     app = QApplication(sys.argv)
