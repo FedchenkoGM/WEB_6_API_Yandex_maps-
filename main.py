@@ -46,20 +46,31 @@ class Window(QMainWindow):
         self.map.setPixmap(pixmap)
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_PageUp and self.map_zoom < 17:
-            self.map_zoom += 1
-        if event.key() == Qt.Key_PageDown and self.map_zoom > 0:
-            self.map_zoom -= 1
+        key = event.key()
 
-        if event.key() == Qt.Key_Left:
-            self.map_ll[0] -= self.delta
-        if event.key() == Qt.Key_Right:
+        if key == Qt.Key_PageUp:
+            if self.map_zoom < 17:
+                self.map_zoom += 1
+        elif key == Qt.Key_PageDown:
+            if self.map_zoom > 0:
+                self.map_zoom -= 1
+
+        elif key == Qt.Key_Right:
             self.map_ll[0] += self.delta
-        if event.key() == Qt.Key_Up:
-            self.map_ll[1] += self.delta
-        if event.key() == Qt.Key_Down:
-            self.map_ll[1] -= self.delta
-
+            if self.map_ll[0] > 180:
+                self.map_ll[0] = self.map_ll[0] - 360
+        elif key == Qt.Key_Left:
+            self.map_ll[0] -= self.delta
+            if self.map_ll[0] < 0:
+                self.map_ll[0] = self.map_ll[0] + 360
+        elif key == Qt.Key_Up:
+            if self.map_ll[1] + self.delta < 90:
+                self.map_ll[1] += self.delta
+        elif key == Qt.Key_Down:
+            if self.map_ll[1] - self.delta > -90:
+                self.map_ll[1] -= self.delta
+        else:
+            return
 
         self.refresh_map()
 
