@@ -27,7 +27,6 @@ class Window(QMainWindow):
 
         self.refresh_map()
 
-
     def refresh_map(self):
         map_params = {
             "ll": ','.join(map(str, self.map_ll)),
@@ -49,7 +48,7 @@ def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
 
 
-
+# задача 1
 if __name__ == '__main__':
     sys.excepthook = except_hook
     app = QApplication(sys.argv)
