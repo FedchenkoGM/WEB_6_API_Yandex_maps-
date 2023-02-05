@@ -25,12 +25,13 @@ class Window(QMainWindow):
         self.map_ll = [87.3, 55.7]
         self.map_l = 'map'
         self.map_zoom = 7
+        self.delta = 0.5
 
         self.refresh_map()
 
     def refresh_map(self):
         map_params = {
-            "ll": ','.join(map(str, self.map_ll)),
+            "ll": f'{self.map_ll[0]},{self.map_ll[1]}',
             "l": self.map_l,
             'z': self.map_zoom
         }
@@ -49,6 +50,17 @@ class Window(QMainWindow):
             self.map_zoom += 1
         if event.key() == Qt.Key_PageDown and self.map_zoom > 0:
             self.map_zoom -= 1
+
+        if event.key() == Qt.Key_Left:
+            self.map_ll[0] -= self.delta
+        if event.key() == Qt.Key_Right:
+            self.map_ll[0] += self.delta
+        if event.key() == Qt.Key_Up:
+            self.map_ll[1] += self.delta
+        if event.key() == Qt.Key_Down:
+            self.map_ll[1] -= self.delta
+
+
         self.refresh_map()
 
 
@@ -56,7 +68,7 @@ def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
 
 
-# задача 1 + 2
+# задача 1 + 2 + 3
 if __name__ == '__main__':
     sys.excepthook = except_hook
     app = QApplication(sys.argv)
