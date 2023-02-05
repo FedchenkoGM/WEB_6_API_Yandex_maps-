@@ -2,6 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
 from PyQt5.QtGui import QPixmap
+import requests
 
 
 class Window(QMainWindow):
@@ -20,9 +21,34 @@ class Window(QMainWindow):
         pixmap = pixmap.scaled(400, 400)
         self.map.setPixmap(pixmap)
 
+        self.map_ll = [87.3, 55.7]
+        self.map_l = 'map'
+        self.map_zoom = 7
+
+        self.refresh_map()
+
+
+    def refresh_map(self):
+        map_params = {
+            "ll": ','.join(map(str, self.map_ll)),
+            "l": self.map_l,
+            'z': self.map_zoom
+        }
+
+        response = requests.get('https://static-maps.yandex.ru/1.x/',
+                                params=map_params)
+        with open('map.png', mode='wb') as f:
+            f.write(response.content)
+
+        pixmap = QPixmap()
+        pixmap.load('map.png')
+        self.map.setPixmap(pixmap)
+
 
 def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
+
+
 
 if __name__ == '__main__':
     sys.excepthook = except_hook
