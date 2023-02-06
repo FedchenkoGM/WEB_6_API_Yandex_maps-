@@ -1,6 +1,5 @@
 import sys
-#wwwww[
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
+from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap
 import requests
 from PyQt5.QtCore import Qt
@@ -20,10 +19,19 @@ class Window(QMainWindow):
         pixmap = QPixmap('tmp.png')
         pixmap = pixmap.scaled(400, 400)
         self.map.setPixmap(pixmap)
+        self.Input_line = QLineEdit(self)
+        self.Input_line.move(0, 450)
+        self.Input_line.resize(520, 20)
+
+        self.Button = QPushButton("Look up", self)
+        self.Button.move(520,450)
+        self.Button.resize(80, 20)
+
 
         self.map_ll = [87.3, 55.7]
         self.map_l = 'map'
         self.map_z = 7
+        self.delta = 0.5
 
         self.refresh_map()
 
@@ -49,10 +57,21 @@ class Window(QMainWindow):
             self.map_z += 1
         elif key == Qt.Key_PageDown and self.map_z > 0:
             self.map_z -= 1
+        elif key == Qt.Key_Up and self.map_ll[1] + self.delta < 90:
+            self.map_ll[1] += self.delta
+        elif key == Qt.Key_Down and self.map_ll[1] + self.delta > -90:
+            self.map_ll[1] -= self.delta
+        elif key == Qt.Key_Right:
+            self.map_ll[0] += self.delta
+            if self.map_ll[0] > 180:
+                self.map_ll -= 360
+        elif key == Qt.Key_Left:
+            self.map_ll[0] -= self.delta
+            if self.map_ll[0] < 0:
+                self.map_ll += 360
         else:
             return
         self.refresh_map()
-
 
 
 
