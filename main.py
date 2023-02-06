@@ -3,8 +3,6 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
 from PyQt5.QtGui import QPixmap
 import requests
-from PyQt5.QtCore import Qt
-
 
 class Window(QMainWindow):
     def __init__(self):
@@ -24,46 +22,26 @@ class Window(QMainWindow):
 
         self.map_ll = [87.3, 55.7]
         self.map_l = 'map'
-        self.map_z = 7
-        self.delta = 0.5
+        self.map_z = '7'
+
         self.refresh_map()
 
     def refresh_map(self):
         map_params = {
-            'll': f'{self.map_ll[0]},{self.map_ll[1]}',
+            "ll": f'{self.map_ll[0]},{self.map_ll[1]}',
             'l': self.map_l,
-            'z': self.map_z
+            "z": self.map_z
         }
 
-        response = requests.get('https://static-maps.yandex.ru/1.x',
-                                params=map_params)
-        with open('map.png', mode='wb') as f:
-            f.write(response.content)
+        res = requests.get('https://static-maps.yandex.ru/1.x', params=map_params)
+
+        with open('map.png', 'wb') as file:
+            file.write(res.content)
 
         pixmap = QPixmap('map.png')
         self.map.setPixmap(pixmap)
 
-    def keyPressEvent(self, event):
-        key = event.key()
-        if key == Qt.Key_PageUp and self.map_z < 17:
-            self.map_z += 1
-        elif key == Qt.Key_PageDown and self.map_z > 0:
-            self.map_z -= 1
-        elif key == Qt.Key_Up and self.map_ll[1] + self.delta < 90:
-            self.map_ll[1] += self.delta
-        elif key == Qt.Key_Down and self.map_ll[1] - self.delta > -90:
-            self.map_ll[1] -= self.delta
-        elif key == Qt.Key_Right:
-            self.map_ll[0] += self.delta
-            if self.map_ll[0] > 180:
-                self.map_ll[0] -= 360
-        elif key == Qt.Key_Left:
-            self.map_ll[0] -= self.delta
-            if self.map_ll[0] < 0:
-                self.map_ll[0] += 360
-        else:
-            return
-        self.refresh_map()
+
 
 
 def except_hook(cls, exception, traceback):
