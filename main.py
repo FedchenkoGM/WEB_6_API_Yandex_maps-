@@ -23,9 +23,11 @@ class Window(QMainWindow):
         self.Input_line.move(0, 450)
         self.Input_line.resize(520, 20)
 
-        self.Button = QPushButton("Look up", self)
-        self.Button.move(520,450)
+        self.Button = QPushButton("search", self)
+        self.Button.move(520, 450)
         self.Button.resize(80, 20)
+        self.Button.clicked.connect(self.search)
+        self.NeedPt = False
 
 
         self.map_ll = [87.3, 55.7]
@@ -35,12 +37,47 @@ class Window(QMainWindow):
 
         self.refresh_map()
 
+    def search(self):
+        toponym_to_find = self.Input_line.text()
+        geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
+
+        geocoder_params = {
+            "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+            "geocode": toponym_to_find,
+            "format": "json"}
+
+        response = requests.get(geocoder_api_server, params=geocoder_params)
+
+        if not response:
+            pass
+
+        json_response = response.json()
+
+        toponym = json_response["response"]["GeoObjectCollection"][
+            "featureMember"][0]["GeoObject"]
+
+        toponym_coodrinates = toponym["Point"]["pos"]
+
+        toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
+
+        self.map_ll = [toponym_longitude, toponym_lattitude]
+        self.NeedPt = True
+        self.refresh_map()
+
     def refresh_map(self):
-        map_params = {
-            "ll": f'{self.map_ll[0]},{self.map_ll[1]}',
-            'l': self.map_l,
-            "z": self.map_z
-        }
+        if self.NeedPt:
+            map_params = {
+                "ll": f'{self.map_ll[0]},{self.map_ll[1]}',
+                'l': self.map_l,
+                "z": self.map_z,
+                "pt": f'{self.map_ll[0]},{self.map_ll[1]}',
+            }
+        else:
+            map_params = {
+                "ll": f'{self.map_ll[0]},{self.map_ll[1]}',
+                'l': self.map_l,
+                "z": self.map_z,
+            }
 
         res = requests.get('https://static-maps.yandex.ru/1.x', params=map_params)
 
